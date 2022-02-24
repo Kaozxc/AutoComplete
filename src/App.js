@@ -2,8 +2,9 @@ import { useState } from 'react';
 import usersData from './users.json';
 
 const App = () => {
-  const [userInput, setUserInput] = useState();
+  const [userInput, setUserInput] = useState('');
   const [listOfFoundUsers, setListOfFoundUsers] = useState([]);
+  const [canStart, setCanStart] = useState(false);
 
   let arr = [];
 
@@ -15,6 +16,16 @@ const App = () => {
     return arr;
   }
 
+  const handleClickOnSuggestions = (e) => {
+    let getInput = document.querySelector('.usersInput');
+    console.log('one', getInput);
+    getInput.innerText = e;
+    if(e === ' ' || e === undefined) {
+      getInput.value = '';
+    }
+    alert('YOU HAVE CLICKEd', e);
+  }
+
 
   const handleClick = (e) => {
     let foundUsers = [];
@@ -24,29 +35,37 @@ const App = () => {
       console.log('name', name);
       console.log('before', e.target.value);
       console.log('before',arr[i][0]);
-      if(e.target.value.toLowerCase() === arr[i].substr(0, e.target.value.length).toLowerCase() ) {
+       if(e.target.value.toLowerCase() === arr[i].substr(0, e.target.value.length).toLowerCase() ) {
         foundUsers += `'${arr[i]}'`
+        setCanStart(true);
       } else {
-      console.log('In the if',e.target.value);
-      console.log('In the if',arr[i]);
         continue;
       }
+      console.log(foundUsers)
     }
     setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
-    console.log('found users', foundUsers.split("'").filter(n => n !== '' ));
+
+    // while(!canStart && i < 10) {
+    //   // setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
+    //   console.log('error')
+    //  i++;
+    // } 
+   // console.log('found users', foundUsers.split("'").filter(n => n !== '' ));
   }
 
   let listComponent;
 
   {
+ 
     if(listOfFoundUsers.length) {
       listComponent = (
         <ul>
         {console.log(listOfFoundUsers)}
         {console.log('typeof', typeof listOfFoundUsers)}
           {listOfFoundUsers.map((listOfFoundUsers, i) => {
+            // console.log('listoffoundusers + i',listOfFoundUsers[i])
             return (
-              <li key={3} onClick={handleClick}>
+              <li key={listOfFoundUsers} onClick={handleClickOnSuggestions}>
               {listOfFoundUsers}
             </li>
             );
@@ -54,7 +73,8 @@ const App = () => {
         </ul>
       )  
     } 
-  }
+   }
+  
 {}
   return (
     <div>
@@ -62,7 +82,7 @@ const App = () => {
          <input type="text" onChange={e => handleClick(e.target.value)} placeholder="Users"/>
           <button type='submit' onClick={submitForm}>Button</button>
       </form> */}
-      <input type="text" onChange={e => handleClick(e)} placeholder="Users"/> 
+      <input className='usersInput' type="text" onChange={e => handleClick(e)} placeholder="Users"/> 
         {listComponent}
       <br/>
 
