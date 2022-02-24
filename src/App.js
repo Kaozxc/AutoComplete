@@ -19,11 +19,7 @@ const App = () => {
   const handleClickOnSuggestions = (e) => {
     let getInput = document.querySelector('.usersInput');
     console.log('one', getInput);
-    getInput.innerText = e;
-    if(e === ' ' || e === undefined) {
-      getInput.value = '';
-    }
-    alert('YOU HAVE CLICKEd', e);
+    getInput.value = e;
   }
 
 
@@ -39,11 +35,15 @@ const App = () => {
         foundUsers += `'${arr[i]}'`
         setCanStart(true);
       } else {
+        console.log('foundusers HERERERE', foundUsers)
         continue;
       }
-      console.log(foundUsers)
+      console.log('foundusers HERERERE', foundUsers)
     }
-    setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
+    
+    if(foundUsers.length !== 0) {
+      setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
+    } 
 
     // while(!canStart && i < 10) {
     //   // setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
@@ -57,7 +57,7 @@ const App = () => {
 
   {
  
-    if(listOfFoundUsers.length) {
+    if(canStart) {
       listComponent = (
         <ul>
         {console.log(listOfFoundUsers)}
@@ -65,7 +65,7 @@ const App = () => {
           {listOfFoundUsers.map((listOfFoundUsers, i) => {
             // console.log('listoffoundusers + i',listOfFoundUsers[i])
             return (
-              <li key={listOfFoundUsers} onClick={handleClickOnSuggestions}>
+              <li key={listOfFoundUsers} onClick={e => handleClickOnSuggestions(e.target.innerText)}>
               {listOfFoundUsers}
             </li>
             );
