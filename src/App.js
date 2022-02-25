@@ -16,41 +16,33 @@ const App = () => {
     return arr;
   }
 
-  const handleClickOnSuggestions = (e) => {
+  const handleClickOnSuggestions = (valueFromInput) => {
     let getInput = document.querySelector('.usersInput');
-    console.log('one', getInput);
-    getInput.value = e;
+    getInput.value = valueFromInput;
   }
 
 
   const handleClick = (e) => {
+    usersFromJson(usersData)
+
     let foundUsers = [];
-    //  console.log(e.target.value)
+
     for(let i = 0; i < arr.length; i++) {
-      let name = arr[i].toString();
-      console.log('name', name);
-      console.log('before', e.target.value);
-      console.log('before',arr[i][0]);
        if(e.target.value.toLowerCase() === arr[i].substr(0, e.target.value.length).toLowerCase() ) {
         foundUsers += `'${arr[i]}'`
         setCanStart(true);
       } else {
-        console.log('foundusers HERERERE', foundUsers)
+        //console.log('foundusers HERERERE', foundUsers)
         continue;
       }
       console.log('foundusers HERERERE', foundUsers)
+      console.log('foundusers to Array', foundUsers.split('"'))
     }
     
     if(foundUsers.length !== 0) {
       setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
+      console.log('listoffoundusers',listOfFoundUsers)
     } 
-
-    // while(!canStart && i < 10) {
-    //   // setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
-    //   console.log('error')
-    //  i++;
-    // } 
-   // console.log('found users', foundUsers.split("'").filter(n => n !== '' ));
   }
 
   let listComponent;
@@ -60,10 +52,7 @@ const App = () => {
     if(canStart) {
       listComponent = (
         <ul>
-        {console.log(listOfFoundUsers)}
-        {console.log('typeof', typeof listOfFoundUsers)}
-          {listOfFoundUsers.map((listOfFoundUsers, i) => {
-            // console.log('listoffoundusers + i',listOfFoundUsers[i])
+          {listOfFoundUsers.map((listOfFoundUsers) => {
             return (
               <li key={listOfFoundUsers} onClick={e => handleClickOnSuggestions(e.target.innerText)}>
               {listOfFoundUsers}
@@ -72,7 +61,13 @@ const App = () => {
           })}
         </ul>
       )  
-    } 
+    } else {
+      listComponent = (
+        <div>
+          No names to autocomplete
+        </div>
+      )
+    }
    }
   
 {}
@@ -86,7 +81,7 @@ const App = () => {
         {listComponent}
       <br/>
 
-     Users : {usersFromJson(usersData)}
+     {/* Users : {usersFromJson(usersData)} */}
     </div>
   )
 }
