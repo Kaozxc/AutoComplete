@@ -1,10 +1,14 @@
+import React from 'react';
 import { useState } from 'react';
 import usersData from './users.json';
+import './app.css';
 
 const App = () => {
+
   const [userInput, setUserInput] = useState('');
   const [listOfFoundUsers, setListOfFoundUsers] = useState([]);
-  const [canStart, setCanStart] = useState(false);
+  const [showSuggestionList, setShowSuggestionList] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(0);
 
   let arr = [];
 
@@ -17,22 +21,27 @@ const App = () => {
   }
 
   const handleClickOnSuggestions = (valueFromInput) => {
+    // setUserInput(valueFromInput);
+    // console.log('valuefrominnput',valueFromInput);
     let getInput = document.querySelector('.usersInput');
-    getInput.value = valueFromInput;
+    getInput.value = valueFromInput.target.innerText;
+    setShowSuggestionList(false);
   }
 
 
   const handleClick = (e) => {
-    usersFromJson(usersData)
 
     let foundUsers = [];
 
+    console.log('e is a: ', e.target.value)
+
     for(let i = 0; i < arr.length; i++) {
        if(e.target.value.toLowerCase() === arr[i].substr(0, e.target.value.length).toLowerCase() ) {
-        foundUsers += `'${arr[i]}'`
-        setCanStart(true);
+        foundUsers += `'${arr[i]}'`;
+        setShowSuggestionList(true);
       } else {
         //console.log('foundusers HERERERE', foundUsers)
+        setShowSuggestionList(false);
         continue;
       }
       console.log('foundusers HERERERE', foundUsers)
@@ -42,42 +51,74 @@ const App = () => {
     if(foundUsers.length !== 0) {
       setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
       console.log('listoffoundusers',listOfFoundUsers)
+      setShowSuggestionList(true);
     } 
+
+    if(e.target.value === '') {
+      setShowSuggestionList(false);
+    }
+
   }
+
+  const onKeyDown = (e) => {
+
+    if(e.keyCode == 38) {
+      alert('up');
+      if(activeSuggestion === 0) {
+        return;
+      }
+      setActiveSuggestion(activeSuggestion - 1);
+    } else if (e.keyCode == 40) {
+      alert('down');
+      if(activeSuggestion - 1 === listOfFoundUsers.length) {
+        return;
+      }
+      setActiveSuggestion(activeSuggestion + 1);
+    } else if(e.keyCode == 13) {
+      e.preventDefault();
+    }
+  }
+
+  usersFromJson(usersData);
 
   let listComponent;
 
   {
  
-    if(canStart) {
+    if(showSuggestionList && listOfFoundUsers.length) {
+      console.log('showsuggestionList', showSuggestionList);
+      console.log('listoffoundusers length', listOfFoundUsers.length);
       listComponent = (
-        <ul>
-          {listOfFoundUsers.map((listOfFoundUsers) => {
+        <ul className='suggestions'>
+          {listOfFoundUsers.map((listOfFoundUsers, index) => {
+            console.log('inside component', listOfFoundUsers );
+            console.log('inside component and INDEX', index );
+
+            let className;
+
+            if (index === activeSuggestion) {
+              className = "suggestion-active";
+            }
+
             return (
-              <li key={listOfFoundUsers} onClick={e => handleClickOnSuggestions(e.target.innerText)}>
+              <li className={className} key={index} onClick={handleClickOnSuggestions}>
               {listOfFoundUsers}
             </li>
             );
           })}
         </ul>
       )  
-    } else {
-      listComponent = (
-        <div>
-          No names to autocomplete
-        </div>
-      )
-    }
+    } 
    }
   
-{}
+
   return (
     <div>
       {/* <form>
          <input type="text" onChange={e => handleClick(e.target.value)} placeholder="Users"/>
           <button type='submit' onClick={submitForm}>Button</button>
       </form> */}
-      <input className='usersInput' type="text" onChange={e => handleClick(e)} placeholder="Users"/> 
+      <input className='usersInput' type="text" onKeyDown={onKeyDown} onChange={e => handleClick(e)} placeholder="Users"/> 
         {listComponent}
       <br/>
 
