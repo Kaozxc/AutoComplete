@@ -61,17 +61,21 @@ const App = () => {
   }
 
   const onKeyDown = (e) => {
-
+    setActiveSuggestion(listOfFoundUsers.length - 1);
     if(e.keyCode == 38) {
-      alert('up');
+      console.log('activesuggestion',activeSuggestion)
       if(activeSuggestion === 0) {
+        return;
+      }
+      if(activeSuggestion >= listOfFoundUsers.length) {
         return;
       }
       setActiveSuggestion(activeSuggestion - 1);
     } else if (e.keyCode == 40) {
-      alert('down');
-      if(activeSuggestion - 1 === listOfFoundUsers.length) {
-        return;
+      console.log('activesuggestion',activeSuggestion)
+      
+      if(activeSuggestion > listOfFoundUsers.length - 1) {
+        return
       }
       setActiveSuggestion(activeSuggestion + 1);
     } else if(e.keyCode == 13) {
