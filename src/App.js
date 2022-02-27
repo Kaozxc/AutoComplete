@@ -1,103 +1,83 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
-import usersData from './users.json';
+import { useDispatch, useSelector, useStore } from 'react-redux';
+import { setJsonData, setListOfFoundUsers, setShowSuggestionList, setActiveSuggestion, SET_LIST_OF_FOUND_USERS, SET_ACTIVE_SUGGESTION } from './redux/actions';
+import { SET_JSON_DATA, SET_SHOW_SUGGESTION_LIST } from './redux/actions';
 import './app.css';
+import userReducer from './redux/reducers';
+import { Store } from './redux/store';
 
 const App = () => {
 
-  const [userInput, setUserInput] = useState('');
-  const [listOfFoundUsers, setListOfFoundUsers] = useState([]);
-  const [showSuggestionList, setShowSuggestionList] = useState(false);
-  const [activeSuggestion, setActiveSuggestion] = useState(0);
+  useEffect(() => {
+    fetch(
+      "https://jsonplaceholder.typicode.com/users")
+      .then((res) => res.json())
+      .then((json) => {
+        dispatch({ type: SET_JSON_DATA, payload: json });
+      })
+      .catch(error => {
+        console.log('error fetching', error);
+      })
+  }, [])
 
-  let arr = [];
+  const { jsonData, listOfFoundUsers, showSuggestionList, activeSuggestion } = useSelector(state => state.userReducer);
+  const dispatch = useDispatch();
 
-  const usersFromJson = (usersData) => {
-    for(let i = 0; i < usersData.length; i++) {
-      arr += JSON.stringify(usersData[i].name);
-    }
-    arr = arr.split('"').filter(n => n !== '' );
-    return arr;
+  const extractNamesFromJson = (data) => {
+    return data.map((user) => user.name);
   }
 
   const handleClickOnSuggestions = (valueFromInput) => {
-    // setUserInput(valueFromInput);
-    // console.log('valuefrominnput',valueFromInput);
     let getInput = document.querySelector('.usersInput');
     getInput.value = valueFromInput.target.innerText;
-    setShowSuggestionList(false);
+    dispatch({ type: SET_SHOW_SUGGESTION_LIST, payload: false });
   }
 
-
   const handleClick = (e) => {
+    const searchValue = e.target.value;
 
-    let foundUsers = [];
-
-    console.log('e is a: ', e.target.value)
-
-    for(let i = 0; i < arr.length; i++) {
-       if(e.target.value.toLowerCase() === arr[i].substr(0, e.target.value.length).toLowerCase() ) {
-        foundUsers += `'${arr[i]}'`;
-        setShowSuggestionList(true);
-      } else {
-        //console.log('foundusers HERERERE', foundUsers)
-        setShowSuggestionList(false);
-        continue;
-      }
-      console.log('foundusers HERERERE', foundUsers)
-      console.log('foundusers to Array', foundUsers.split('"'))
-    }
-    
-    if(foundUsers.length !== 0) {
-      setListOfFoundUsers(foundUsers.split("'").filter(n => n !== '' ));
-      console.log('listoffoundusers',listOfFoundUsers)
-      setShowSuggestionList(true);
-    } 
-
-    if(e.target.value === '') {
-      setShowSuggestionList(false);
+    if (!searchValue) {
+      dispatch({ type: SET_SHOW_SUGGESTION_LIST, payload: false });
+      return;
     }
 
+    const userNames = extractNamesFromJson(jsonData);
+    console.log('usernames', userNames)
+    console.log('jsonglobal', jsonData)
+    console.log('showsuggestion', showSuggestionList)
+    let foundUsers = userNames.map((name) => {
+      return (name.toLowerCase()).startsWith(searchValue.toLowerCase()) ? name : null;
+    })
+    dispatch({ type: SET_SHOW_SUGGESTION_LIST, payload: foundUsers.length > 0 });
+
+    if (foundUsers.length > 0) {
+      dispatch({ type: SET_LIST_OF_FOUND_USERS, payload: foundUsers.filter(n => n) });
+    }
   }
 
   const onKeyDown = (e) => {
-    setActiveSuggestion(listOfFoundUsers.length - 1);
-    if(e.keyCode == 38) {
-      console.log('activesuggestion',activeSuggestion)
-      if(activeSuggestion === 0) {
-        return;
-      }
-      if(activeSuggestion >= listOfFoundUsers.length) {
-        return;
-      }
-      setActiveSuggestion(activeSuggestion - 1);
-    } else if (e.keyCode == 40) {
-      console.log('activesuggestion',activeSuggestion)
-      
-      if(activeSuggestion > listOfFoundUsers.length - 1) {
-        return
-      }
-      setActiveSuggestion(activeSuggestion + 1);
-    } else if(e.keyCode == 13) {
+    // dispatch({ type: SET_ACTIVE_SUGGESTION, payload: listOfFoundUsers.length - 1 });
+    const key = e.keyCode;
+    const currentIndex = activeSuggestion;
+    if (key === 38) {
+      dispatch({ type: SET_ACTIVE_SUGGESTION, payload: currentIndex === 0 ? listOfFoundUsers.length - 1 : currentIndex - 1 });
+    }
+    else if (key === 40) {
+      dispatch({ type: SET_ACTIVE_SUGGESTION, payload: currentIndex >= listOfFoundUsers.length - 1 ? 0 : currentIndex + 1 });
+    } else if (e.keyCode == 13) {
       e.preventDefault();
     }
   }
 
-  usersFromJson(usersData);
-
   let listComponent;
 
   {
- 
-    if(showSuggestionList && listOfFoundUsers.length) {
-      console.log('showsuggestionList', showSuggestionList);
-      console.log('listoffoundusers length', listOfFoundUsers.length);
+
+    if (showSuggestionList && listOfFoundUsers.length) {
       listComponent = (
         <ul className='suggestions'>
           {listOfFoundUsers.map((listOfFoundUsers, index) => {
-            console.log('inside component', listOfFoundUsers );
-            console.log('inside component and INDEX', index );
-
             let className;
 
             if (index === activeSuggestion) {
@@ -106,27 +86,20 @@ const App = () => {
 
             return (
               <li className={className} key={index} onClick={handleClickOnSuggestions}>
-              {listOfFoundUsers}
-            </li>
+                {listOfFoundUsers}
+              </li>
             );
           })}
         </ul>
-      )  
-    } 
-   }
-  
+      )
+    }
+  }
+
 
   return (
     <div>
-      {/* <form>
-         <input type="text" onChange={e => handleClick(e.target.value)} placeholder="Users"/>
-          <button type='submit' onClick={submitForm}>Button</button>
-      </form> */}
-      <input className='usersInput' type="text" onKeyDown={onKeyDown} onChange={e => handleClick(e)} placeholder="Users"/> 
-        {listComponent}
-      <br/>
-
-     {/* Users : {usersFromJson(usersData)} */}
+      <input className='usersInput' type="text" onKeyDown={onKeyDown} onChange={e => handleClick(e)} placeholder="Users" />
+      {listComponent}
     </div>
   )
 }

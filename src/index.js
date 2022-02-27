@@ -1,11 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import App from './App';
-import usersData from './users.json';
+import {Store} from './redux/store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App usersData={usersData} />
+    <Provider store={Store}>
+    <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
