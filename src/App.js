@@ -67,27 +67,24 @@ const App = () => {
 
   let listComponent;
 
-  {
+  if (showSuggestionList && listOfFoundUsers.length) {
+    listComponent = (
+      <ul className='suggestions'>
+        {listOfFoundUsers.map((listOfFoundUsers, index) => {
+          let className;
 
-    if (showSuggestionList && listOfFoundUsers.length) {
-      listComponent = (
-        <ul className='suggestions'>
-          {listOfFoundUsers.map((listOfFoundUsers, index) => {
-            let className;
+          if (index === activeSuggestion) {
+            className = "suggestion-active";
+          }
 
-            if (index === activeSuggestion) {
-              className = "suggestion-active";
-            }
-
-            return (
-              <li className={className} key={index} onClick={handleClickOnSuggestions}>
-                {listOfFoundUsers}
-              </li>
-            );
-          })}
-        </ul>
-      )
-    }
+          return (
+            <li className={className} key={index} onClick={handleClickOnSuggestions}>
+              {listOfFoundUsers}
+            </li>
+          );
+        })}
+      </ul>
+    )
   }
 
   return (
