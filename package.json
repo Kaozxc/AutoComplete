@@ -1,8 +1,8 @@
 {
-  "name": "test4work",
+  "name": "AutoComplete",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://kaozxc.github.io/test4work/",
+  "homepage": "https://kaozxc.github.io/AutoComplete/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
     "@testing-library/jest-dom": "^5.16.2",
