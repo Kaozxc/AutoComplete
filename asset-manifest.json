@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/test4work/static/css/main.ed80e3f7.css",
-    "main.js": "/test4work/static/js/main.17985891.js",
-    "index.html": "/test4work/index.html",
-    "main.ed80e3f7.css.map": "/test4work/static/css/main.ed80e3f7.css.map",
-    "main.17985891.js.map": "/test4work/static/js/main.17985891.js.map"
+    "main.css": "/AutoComplete/static/css/main.ed80e3f7.css",
+    "main.js": "/AutoComplete/static/js/main.17985891.js",
+    "index.html": "/AutoComplete/index.html",
+    "main.ed80e3f7.css.map": "/AutoComplete/static/css/main.ed80e3f7.css.map",
+    "main.17985891.js.map": "/AutoComplete/static/js/main.17985891.js.map"
   },
   "entrypoints": [
     "static/css/main.ed80e3f7.css",
